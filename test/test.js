@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// End-to-end test: for each case, nifc emits C from a real post-hexer .c.nif,
+// End-to-end test: for each case, aowlc emits C from a real post-hexer .c.nif,
 // gcc compiles it to a native binary, we run it, and assert the printed result.
 // The .c.nif inputs in examples/ were produced by nimony's own frontend+hexer.
 "use strict";
@@ -7,7 +7,7 @@ const cp = require("child_process");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
-const NIFC = path.join(ROOT, "bin", "nifc");
+const AOWLC = path.join(ROOT, "bin", "aowlc");
 const EX = path.join(ROOT, "examples");
 
 // [file, entry, args, expected-stdout]
@@ -38,7 +38,7 @@ const MODULE_BUILDS = ["fib.c.nif", "compute.c.nif", "mathf.c.nif"];
 function run(file, entry, args) {
   const argv = ["exec", path.join(EX, file), "--entry", entry];
   for (const a of args) argv.push("--arg", String(a));
-  const r = cp.spawnSync("node", [NIFC, ...argv], { encoding: "utf8" });
+  const r = cp.spawnSync("node", [AOWLC, ...argv], { encoding: "utf8" });
   if (r.status !== 0) throw new Error((r.stderr || "").trim() || "exec failed");
   return r.stdout.trim();
 }
@@ -53,7 +53,7 @@ for (const [file, entry, args, want] of CASES) {
   } catch (e) { console.log(`  FAIL ${label} => ${e.message}`); fail++; }
 }
 for (const file of MODULE_BUILDS) {
-  const r = cp.spawnSync("node", [NIFC, "run", path.join(EX, file)], { encoding: "utf8" });
+  const r = cp.spawnSync("node", [AOWLC, "run", path.join(EX, file)], { encoding: "utf8" });
   if (r.status === 0) { console.log(`  ok   module build+run ${file}`); pass++; }
   else { console.log(`  FAIL module build+run ${file}: ${(r.stderr||"").trim()}`); fail++; }
 }
